@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parkleitsystem Münster — Live</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0d1117;
+  --surface: #161b22;
+  --border:  #30363d;
+  --green:   #3fb950;
+  --yellow:  #d29922;
+  --red:     #f85149;
+  --blue:    #58a6ff;
+  --text:    #e6edf3;
+  --muted:   #8b949e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 18px;
+}
+
+/* HEADER */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+.logo span { color: var(--blue); }
+.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#update-time { font-size: 12px; color: var(--muted); }
+.live-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(63,185,80,.12);
+  border: 1px solid rgba(63,185,80,.3);
+  color: var(--green);
+  padding: 4px 12px; border-radius: 20px; font-size: 12px;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  animation: blink 1.6s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ERROR */
+#error-box {
+  display: none;
+  background: rgba(248,81,73,.1);
+  border: 1px solid rgba(248,81,73,.35);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--red);
+  font-size: 13px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* STATS */
+#stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: border-color .2s;
+}
+.stat-card:hover { border-color: var(--blue); }
+.stat-label {
+  font-size: 10px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 5px;
+}
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800; line-height: 1;
+}
+.c-blue   { color: var(--blue); }
+.c-green  { color: var(--green); }
+.c-red    { color: var(--red); }
+.c-yellow { color: var(--yellow); }
+
+/* MAP */
+#map {
+  height: 460px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.leaflet-tile { filter: brightness(.65) saturate(.5) invert(1) hue-rotate(180deg); }
+.leaflet-container { background: var(--bg) !important; }
+
+/* POPUP */
+.cpop .leaflet-popup-content-wrapper {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  color: #e6edf3;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6);
+  padding: 0;
+}
+.cpop .leaflet-popup-tip { background: #161b22; }
+.cpop .leaflet-popup-content { margin: 0; }
+.pop-body { padding: 14px 16px; min-width: 220px; }
+.pop-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; margin-bottom:10px; line-height:1.2; }
+.pop-row  { display:flex; justify-content:space-between; gap:12px; margin-bottom:5px; }
+.pop-row .k { color: var(--muted); }
+.pop-row .v { font-weight:500; }
+.pop-bar  { height:7px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; margin-top:10px; }
+.pop-bar-fill { height:100%; border-radius:4px; transition:width .5s; }
